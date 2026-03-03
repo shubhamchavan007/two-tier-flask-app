@@ -39,7 +39,9 @@ pipeline{
                 sh "docker compose up -d"
             }
         }
-        post{
+       
+    }
+     post{
             success{
                 script{
                     emailext from:"sc2421999@gmail.com",
@@ -57,5 +59,4 @@ pipeline{
                 }
              }
         }
-    }
 }
