@@ -1,5 +1,5 @@
 pipeline{
-    agent {label dev-agent};
+    agent {label 'dev-agent'};
     stages{
         stage("code"){
             steps{
@@ -10,7 +10,22 @@ pipeline{
         stage("build"){
             steps{
                 echo "this is build stage"
-                sh "docker build -t my-app ."
+                sh "docker build -t two-tier-flaskapp ."
+            }
+        }
+        stage("docker hub"){
+            steps{
+                echo "this is build stage"
+                script{
+                withCredentials([usernamePassword(credentialsId: "dockerHubCreds",
+                usernameVariable:"dockerHubUser",
+                passwordVariable:"dockerHubPass"
+                )]){
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                    sh "docker image tag two-tier-flaskapp ${env.dockerHubUser}/two-tier-flaskapp:lates"
+                    sh "docker push ${env.dockerHubUser}/two-tier-flaskapp:latest"
+                }
+                }
             }
         }
         stage("test"){
@@ -25,4 +40,3 @@ pipeline{
             }
         }
     }
-}
